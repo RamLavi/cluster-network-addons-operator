@@ -1,8 +1,12 @@
 package network
 
 import (
+	"context"
+
 	"github.com/pkg/errors"
 	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	opv1alpha1 "github.com/kubevirt/cluster-network-addons-operator/pkg/apis/networkaddonsoperator/v1alpha1"
 )
@@ -38,6 +42,11 @@ func changeSafeImagePullPolicy(prev, next *opv1alpha1.NetworkAddonsConfigSpec) [
 		return []error{errors.Errorf("cannot modify ImagePullPolicy configuration once components were deployed")}
 	}
 	return []error{}
+}
+
+// Currently not implemented, since there are no obsolete objects under this module
+func CleanUpImagePullPolicy(ctx context.Context, client k8sclient.Client, objs []*unstructured.Unstructured) []error {
+	return nil
 }
 
 // Verify if the value is a valid PullPolicy

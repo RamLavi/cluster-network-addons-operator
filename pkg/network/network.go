@@ -1,6 +1,7 @@
 package network
 
 import (
+	"context"
 	"log"
 	"reflect"
 	"strings"
@@ -8,6 +9,7 @@ import (
 	osv1 "github.com/openshift/api/operator/v1"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	opv1alpha1 "github.com/kubevirt/cluster-network-addons-operator/pkg/apis/networkaddonsoperator/v1alpha1"
 )
@@ -45,6 +47,28 @@ func FillDefaults(conf, previous *opv1alpha1.NetworkAddonsConfigSpec) error {
 
 	if len(errs) > 0 {
 		return errors.Errorf("invalid configuration:\n%s", errorListToMultiLineString(errs))
+	}
+
+	return nil
+}
+
+// specialCleanUp checks if there are any outdated objects and deletes them.
+// This means that the object wil be installed as new and not by the upgrade kubectl algorithm
+// The cleanUp is performed on specific obsoleted objects, so some of the cleanUp functions may be not implemented.
+func SpecialCleanUp(networkAddonsConfig *opv1alpha1.NetworkAddonsConfig, client k8sclient.Client, objs []*unstructured.Unstructured) error {
+
+	errs := []error{}
+	ctx := context.TODO()
+
+	errs = append(errs, CleanUpMultus(ctx, client, objs)...)
+	errs = append(errs, CleanUpLinuxBridge(ctx, client, objs)...)
+	errs = append(errs, CleanUpKubeMacPool(ctx, client, objs)...)
+	errs = append(errs, CleanUpImagePullPolicy(ctx, client, objs)...)
+	errs = append(errs, CleanUpNMState(ctx, client, objs)...)
+	errs = append(errs, CleanUpOvs(ctx, client, objs)...)
+
+	if len(errs) > 0 {
+		return errors.Errorf("invalid configuration:\n%v", errs)
 	}
 
 	return nil

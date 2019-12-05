@@ -1,6 +1,7 @@
 package network
 
 import (
+	"context"
 	"crypto/rand"
 	"fmt"
 	"net"
@@ -11,6 +12,7 @@ import (
 	"github.com/kubevirt/cluster-network-addons-operator/pkg/render"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	opv1alpha1 "github.com/kubevirt/cluster-network-addons-operator/pkg/apis/networkaddonsoperator/v1alpha1"
 )
@@ -91,6 +93,11 @@ func changeSafeKubeMacPool(prev, next *opv1alpha1.NetworkAddonsConfigSpec) []err
 		return []error{errors.Errorf("cannot modify KubeMacPool configuration once it is deployed")}
 	}
 	return []error{}
+}
+
+// Currently not implemented, since there are no obsolete objects under this module
+func CleanUpKubeMacPool(ctx context.Context, client k8sclient.Client, objs []*unstructured.Unstructured) []error {
+	return nil
 }
 
 // renderLinuxBridge generates the manifests of Linux Bridge

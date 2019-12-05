@@ -1,6 +1,7 @@
 package network
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -8,6 +9,7 @@ import (
 	osv1 "github.com/openshift/api/operator/v1"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	opv1alpha1 "github.com/kubevirt/cluster-network-addons-operator/pkg/apis/networkaddonsoperator/v1alpha1"
 	"github.com/kubevirt/cluster-network-addons-operator/pkg/network/cni"
@@ -33,6 +35,11 @@ func changeSafeMultus(prev, next *opv1alpha1.NetworkAddonsConfigSpec) []error {
 	if prev.Multus != nil && !reflect.DeepEqual(prev.Multus, next.Multus) {
 		return []error{errors.Errorf("cannot modify Multus configuration once it is deployed")}
 	}
+	return nil
+}
+
+// Currently not implemented, since there are no obsolete objects under this module
+func CleanUpMultus(ctx context.Context, client k8sclient.Client, objs []*unstructured.Unstructured) []error {
 	return nil
 }
 

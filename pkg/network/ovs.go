@@ -1,6 +1,7 @@
 package network
 
 import (
+	"context"
 	"os"
 	"path/filepath"
 	"reflect"
@@ -8,6 +9,7 @@ import (
 	"github.com/kubevirt/cluster-network-addons-operator/pkg/render"
 	"github.com/pkg/errors"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	k8sclient "sigs.k8s.io/controller-runtime/pkg/client"
 
 	opv1alpha1 "github.com/kubevirt/cluster-network-addons-operator/pkg/apis/networkaddonsoperator/v1alpha1"
 	"github.com/kubevirt/cluster-network-addons-operator/pkg/network/cni"
@@ -17,6 +19,11 @@ func changeSafeOvs(prev, next *opv1alpha1.NetworkAddonsConfigSpec) []error {
 	if prev.Ovs != nil && !reflect.DeepEqual(prev.Ovs, next.Ovs) {
 		return []error{errors.Errorf("cannot modify Ovs configuration once it is deployed")}
 	}
+	return nil
+}
+
+// Currently not implemented, since there are no obsolete objects under this module
+func CleanUpOvs(ctx context.Context, client k8sclient.Client, objs []*unstructured.Unstructured) []error {
 	return nil
 }
 

@@ -278,6 +278,12 @@ func (r *ReconcileNetworkAddonsConfig) renderObjects(networkAddonsConfig *opv1al
 		}
 	}
 
+	// Clean Up any outdated obsoleted objects
+	if err := network.SpecialCleanUp(networkAddonsConfig, r.client, objs); err != nil {
+		log.Printf("failed to Clean Up outdated objects: %v", err)
+		return objs, err
+	}
+
 	// Generate the objects
 	objs, err = network.Render(&networkAddonsConfig.Spec, ManifestPath, openshiftNetworkConfig, r.clusterInfo)
 	if err != nil {

@@ -255,7 +255,7 @@ make cluster-down
 
 # Releasing
 
-1. Checkout a public branch
+1. Checkout a new branch: `checkout -b <new-branch-name>`
 2. Call `make prepare-patch|minor|major` and prepare release notes
-3. Open a new PR
-4. Once the PR is merged, create a new release in GitHub and attach new manifests
+3. Push to remote repository in order to make it public `git push --set-upstream origin <new-branch-name>`
+5. Once the PR is merged, Open a new PR and create a new release in GitHub and attach new manifests

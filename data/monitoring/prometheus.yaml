@@ -32,3 +32,12 @@ spec:
   groups:
     - name: cluster-addons-network-operator.rules
       rules:
+        - expr: sum(up{namespace='{{ .Namespace }}', pod=~'cluster-addons-network-operator-.*'})
+          record: num_of_running_cnao_operators
+        - alert: CnaoOperatorDown
+          annotations:
+            summary: CNAO operator pod is down.
+          expr: num_of_running_cnao_operators == 0
+          for: 5m
+          labels:
+            severity: critical
